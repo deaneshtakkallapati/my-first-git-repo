@@ -1,32 +1,43 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Apr 17 06:31:17 2024
-
 @author: DEANESH
 """
-
 import os
 import pandas as pd
 import numpy as np
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.metrics import mean_absolute_error
+from sklearn.model_selection import train_test_split
 
-df = pd.read_csv(os.path.join(os.path.dirname(__file__), "Sample.csv"))
-my_series = pd.Series(np.random.randint(2,7))
-countries_reviewed = df.groupby(['country', 'province']).description.agg([len])
 
-def remean_points(row):
-    row.points = row.points - review_points_mean
-    return row 
+def ml_prediction_dataframe():
+    df = pd.read_csv(os.path.join(os.path.dirname(__file__), "melb_data.csv"))
+    melbourne_features = ['Rooms', 'Bathroom', 'Landsize', 'Lattitude', 'Longtitude']
+    X = df[melbourne_features];  y = df.Price
+    train_X, val_X, train_y, val_y = train_test_split(X, y, random_state=0)
+    # Define model
+    melbourne_model = DecisionTreeRegressor()
+    melbourne_model.fit(train_X, train_y)
+    # get predicted prices on validation data
+    val_predictions = melbourne_model.predict(val_X)
+    print(mean_absolute_error(val_y, val_predictions))
 
-def my_datafram():
+
+def process_dummy_dataframe():
     # Fetch file data using the current dir path
     df = pd.read_csv(os.path.join(os.path.dirname(__file__), "A.csv"))
-    
-    print(df)    
     print(df.loc[(df.A == 'A') & (df.B == 98)])
     print(df.loc[(df.A == 'A') | (df.B >= 98)])
     print(df.loc[df.A.isin(['A'])])
     print(df.loc[df.C.notnull()])
     print(df.A.unique())
+    return df
+
+
+def my_dataframe():
+    df = pd.read_csv(os.path.join(os.path.dirname(__file__), "Sample.csv"))
+    countries_reviewed = df.groupby(['country', 'province']).description.agg([len])
     # Median
     print(df.points.median())
     print(df.groupby(['points']).points.count())
@@ -40,6 +51,18 @@ def my_datafram():
     print(countries_reviewed.reset_index().sort_values(by= 'len', ascending=False))
     print(countries_reviewed.sort_index())
     print(countries_reviewed.sort_values(by=['country', 'len']))
+
+
+# ml_prediction_dataframe()
+
+
+
+
+
+
+
+
+
 
 
 
